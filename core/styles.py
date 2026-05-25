@@ -321,7 +321,7 @@ def risk_chip(risk: str) -> str:
         f'background:{p["bg"]};color:{p["text"]};border:1px solid {p["border"]};'
         f'border-radius:20px;padding:3px 10px 3px 8px;font-size:0.78rem;'
         f'font-weight:600;font-family:\'DM Sans\',sans-serif;white-space:nowrap;">'
-        f'<span style="width:6px;height:6px;border-radius:50%;'
+        f'<span aria-hidden="true" style="width:6px;height:6px;border-radius:50%;'
         f'background:{p["dot"]};flex-shrink:0;"></span>{risk}</span>'
     )
 
@@ -339,7 +339,7 @@ def bmi_hero_html(
     cat_color = CATEGORY_HERO.get(category, "#0F6CBD")
     p = RISK_PALETTE.get(risk, RISK_PALETTE["—"])
     return f"""
-<div class="bmi-hero" style="
+<div class="bmi-hero" role="region" aria-label="BMI Results Summary" style="
     background: linear-gradient(135deg, #0A1628 0%, #1E3A5F 100%);
     border-radius: 16px;
     padding: 2rem 2.5rem;
@@ -369,7 +369,7 @@ def bmi_hero_html(
             background:{p["bg"]};color:{p["text"]};border:1px solid {p["border"]};
             border-radius:20px;padding:4px 12px 4px 9px;font-size:0.8rem;
             font-weight:600;font-family:'DM Sans',sans-serif;">
-            <span style="width:7px;height:7px;border-radius:50%;
+            <span aria-hidden="true" style="width:7px;height:7px;border-radius:50%;
                 background:{p["dot"]};flex-shrink:0;"></span>
             Health risk: {risk}
         </span>
@@ -435,25 +435,25 @@ def indices_table_html(
             <td style="padding:0.8rem 1.1rem;">{risk_chip(risk)}</td>
         </tr>"""
     return f"""
-<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0.5rem 0 1.5rem;">
+<div role="region" aria-label="All Indices" style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0.5rem 0 1.5rem;">
 <div style="border-radius:12px;overflow:hidden;min-width:480px;
     box-shadow:0 1px 3px rgba(10,22,40,.08),0 1px 2px rgba(10,22,40,.05);">
 <table style="width:100%;border-collapse:collapse;">
     <thead>
         <tr style="background:#0A1628;">
-            <th style="padding:0.7rem 1.1rem;text-align:left;color:#8BB8E8;
+            <th scope="col" style="padding:0.7rem 1.1rem;text-align:left;color:#8BB8E8;
                 font-family:'DM Sans',sans-serif;font-size:0.65rem;
                 font-weight:700;text-transform:uppercase;letter-spacing:0.1em;
                 border:none;">Index</th>
-            <th style="padding:0.7rem 1.1rem;text-align:left;color:#8BB8E8;
+            <th scope="col" style="padding:0.7rem 1.1rem;text-align:left;color:#8BB8E8;
                 font-family:'DM Sans',sans-serif;font-size:0.65rem;
                 font-weight:700;text-transform:uppercase;letter-spacing:0.1em;
                 border:none;">Value</th>
-            <th style="padding:0.7rem 1.1rem;text-align:left;color:#8BB8E8;
+            <th scope="col" style="padding:0.7rem 1.1rem;text-align:left;color:#8BB8E8;
                 font-family:'DM Sans',sans-serif;font-size:0.65rem;
                 font-weight:700;text-transform:uppercase;letter-spacing:0.1em;
                 border:none;">Classification</th>
-            <th style="padding:0.7rem 1.1rem;text-align:left;color:#8BB8E8;
+            <th scope="col" style="padding:0.7rem 1.1rem;text-align:left;color:#8BB8E8;
                 font-family:'DM Sans',sans-serif;font-size:0.65rem;
                 font-weight:700;text-transform:uppercase;letter-spacing:0.1em;
                 border:none;">Health Risk</th>
@@ -467,7 +467,7 @@ def indices_table_html(
 
 def section_label(text: str) -> str:
     return (
-        f'<p style="font-family:\'DM Sans\',sans-serif;font-size:0.68rem;'
+        f'<p role="heading" aria-level="2" style="font-family:\'DM Sans\',sans-serif;font-size:0.68rem;'
         f'font-weight:700;text-transform:uppercase;letter-spacing:0.1em;'
         f'color:#536780;margin:1.5rem 0 0.5rem;">{text}</p>'
     )
@@ -480,7 +480,7 @@ def formula_card_open(title: str, citation: str) -> str:
     box-shadow:0 1px 3px rgba(10,22,40,.06);">
     <div style="display:flex;justify-content:space-between;align-items:baseline;
         flex-wrap:wrap;gap:0.4rem;margin-bottom:0.75rem;">
-        <p style="font-family:'DM Serif Display',serif;font-size:1.2rem;
+        <p role="heading" aria-level="3" style="font-family:'DM Serif Display',serif;font-size:1.2rem;
             color:#0A1628;margin:0;">{title}</p>
         <span style="font-size:0.72rem;color:#536780;font-family:'DM Sans',sans-serif;
             background:#EEF3FA;padding:2px 8px;border-radius:4px;">{citation}</span>

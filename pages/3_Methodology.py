@@ -66,7 +66,7 @@ def styled_table(headers, rows, risk_col=None):
         "Extremely High":        "#FFE4E6",
     }
     th_cells = "".join(
-        f'<th style="padding:0.7rem 1rem;text-align:left;color:#8BB8E8;'
+        f'<th scope="col" style="padding:0.7rem 1rem;text-align:left;color:#8BB8E8;'
         f'font-family:\'DM Sans\',sans-serif;font-size:0.65rem;font-weight:700;'
         f'text-transform:uppercase;letter-spacing:0.1em;border:none;">{h}</th>'
         for h in headers

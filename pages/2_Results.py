@@ -126,7 +126,7 @@ risk_text = {
 p = RISK_PALETTE.get(primary_risk, RISK_PALETTE["—"])
 interp_text = risk_text.get(primary_risk, "Interpretation not available for this risk level.")
 st.html(
-    f'<div style="background:{p["bg"]};border:1px solid {p["border"]};border-left:4px solid {p["dot"]};'
+    f'<div role="region" aria-label="Risk Interpretation" style="background:{p["bg"]};border:1px solid {p["border"]};border-left:4px solid {p["dot"]};'
     f'border-radius:10px;padding:1rem 1.25rem;font-size:0.9rem;color:{p["text"]};'
     f'font-family:\'DM Sans\',sans-serif;line-height:1.65;">{interp_text}</div>')
 
