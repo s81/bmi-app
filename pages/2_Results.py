@@ -15,6 +15,7 @@ from core.classifications import (
 from core.styles import (
     inject_css,
     bmi_hero_html,
+    bmi_scale_html,
     indices_table_html,
     ibw_table_html,
     bf_table_html,
@@ -107,7 +108,10 @@ st.html(
         weight_display=inputs["weight_display"],
     ))
 
-# ── Section 2: All indices table ──────────────────────────────────────────────
+# ── Section 2: BMI scale chart ───────────────────────────────────────────────
+st.html(bmi_scale_html(standard_bmi, is_asian=is_asian))
+
+# ── Section 3: All indices table ──────────────────────────────────────────────
 st.html(section_label("All Indices"))
 st.html(
     indices_table_html(
@@ -126,7 +130,7 @@ st.html(
         whtr_risk=whtr_risk,
     ))
 
-# ── Section 3: WHtR callout ───────────────────────────────────────────────────
+# ── Section 4: WHtR callout ───────────────────────────────────────────────────
 if whtr is not None:
     target = height_cm / 2
     target_display = inputs["waist_display"].split(" ")[1]  # unit label

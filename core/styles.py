@@ -1,4 +1,5 @@
 import streamlit as st
+from core.bmi import kg_to_lbs
 
 # ── Risk palette ────────────────────────────────────────────────────────────
 RISK_PALETTE = {
@@ -611,6 +612,117 @@ def ibw_table_html(
     font-family:'DM Sans',sans-serif;line-height:1.6;margin-bottom:0.5rem;">
     <b>Average IBW across all formulas: {_fmt(avg_kg)}</b>{sex_note}.
     Your actual weight is <b>{avg_sign}{avg_pct:.1f}%</b> {direction} the average IBW. [10–13]
+</div>"""
+
+
+def bmi_scale_html(bmi_val: float, is_asian: bool = False) -> str:
+    """Horizontal SVG gauge showing where bmi_val falls across WHO categories."""
+    BAR_X, BAR_Y, BAR_W, BAR_H = 20.0, 50.0, 560.0, 26.0
+    SCALE_LO, SCALE_HI = 10.0, 45.0
+    SCALE_RANGE = SCALE_HI - SCALE_LO
+
+    def to_px(v: float) -> float:
+        return BAR_X + (v - SCALE_LO) / SCALE_RANGE * BAR_W
+
+    if is_asian:
+        bands = [
+            (10.0, 18.5, "#10B981", "Underweight"),
+            (18.5, 23.0, "#2563EB", "Normal"),
+            (23.0, 27.5, "#D97706", "Overweight"),
+            (27.5, 45.0, "#DC2626", "Obese"),
+        ]
+        ticks = [18.5, 23.0, 27.5]
+        title_text = "BMI Scale — Asian Cutoffs (WHO 2004)"
+    else:
+        bands = [
+            (10.0, 18.5, "#10B981", "Underweight"),
+            (18.5, 25.0, "#2563EB", "Normal"),
+            (25.0, 30.0, "#D97706", "Overweight"),
+            (30.0, 35.0, "#DC2626", "Obese I"),
+            (35.0, 40.0, "#BE123C", "Obese II"),
+            (40.0, 45.0, "#9F1239", "Obese III"),
+        ]
+        ticks = [18.5, 25.0, 30.0, 35.0, 40.0]
+        title_text = "BMI Scale — WHO Standard"
+
+    # Colored band rects (rendered inside clipPath for rounded corners)
+    rects_svg = ""
+    labels_svg = ""
+    for lo, hi, color, label in bands:
+        x1 = to_px(lo)
+        x2 = to_px(hi)
+        w = x2 - x1
+        mid_x = (x1 + x2) / 2.0
+        mid_y = BAR_Y + BAR_H / 2.0 + 4.0
+        rects_svg += (
+            f'<rect x="{x1:.1f}" y="{BAR_Y:.0f}" '
+            f'width="{w:.1f}" height="{BAR_H:.0f}" fill="{color}"/>'
+        )
+        if w >= 32:
+            labels_svg += (
+                f'<text x="{mid_x:.1f}" y="{mid_y:.1f}" text-anchor="middle" '
+                f'font-family="DM Sans,sans-serif" font-size="8.5" font-weight="600" '
+                f'fill="rgba(255,255,255,0.93)" pointer-events="none">{label}</text>'
+            )
+
+    # Tick marks and boundary value labels below bar
+    bar_bot = BAR_Y + BAR_H
+    tick_y2 = bar_bot + 6.0
+    lbl_y = bar_bot + 18.0
+    ticks_svg = ""
+    for v in ticks:
+        tx = to_px(v)
+        ticks_svg += (
+            f'<line x1="{tx:.1f}" y1="{bar_bot:.0f}" x2="{tx:.1f}" y2="{tick_y2:.0f}" '
+            f'stroke="#CBD5E1" stroke-width="1.5"/>'
+            f'<text x="{tx:.1f}" y="{lbl_y:.0f}" text-anchor="middle" '
+            f'font-family="DM Sans,sans-serif" font-size="9" fill="#536780">{v}</text>'
+        )
+    ticks_svg += (
+        f'<text x="{BAR_X:.0f}" y="{lbl_y:.0f}" text-anchor="middle" '
+        f'font-family="DM Sans,sans-serif" font-size="9" fill="#94A3B8">10</text>'
+        f'<text x="{BAR_X + BAR_W:.0f}" y="{lbl_y:.0f}" text-anchor="middle" '
+        f'font-family="DM Sans,sans-serif" font-size="9" fill="#94A3B8">45+</text>'
+    )
+
+    # Marker: white vertical line + downward triangle + value label
+    mx = to_px(max(10.1, min(44.9, bmi_val)))
+    tri_tip_y = BAR_Y - 2.0
+    tri_base_y = BAR_Y - 14.0
+    tri_l = mx - 6.0
+    tri_r = mx + 6.0
+    val_y = tri_base_y - 4.0
+    marker_svg = (
+        f'<line x1="{mx:.1f}" y1="{BAR_Y:.0f}" x2="{mx:.1f}" y2="{bar_bot:.0f}" '
+        f'stroke="rgba(255,255,255,0.85)" stroke-width="2"/>'
+        f'<polygon points="{mx:.1f},{tri_tip_y:.0f} {tri_l:.1f},{tri_base_y:.0f} {tri_r:.1f},{tri_base_y:.0f}" '
+        f'fill="#0A1628"/>'
+        f'<text x="{mx:.1f}" y="{val_y:.0f}" text-anchor="middle" '
+        f'font-family="JetBrains Mono,monospace" font-size="11" font-weight="600" '
+        f'fill="#0A1628">{bmi_val:.2f}</text>'
+    )
+
+    clip = (
+        f'<defs><clipPath id="bmi-scale-clip">'
+        f'<rect x="{BAR_X:.0f}" y="{BAR_Y:.0f}" '
+        f'width="{BAR_W:.0f}" height="{BAR_H:.0f}" rx="6" ry="6"/>'
+        f'</clipPath></defs>'
+    )
+    aria = f"BMI scale chart. Your BMI of {bmi_val:.2f} is marked on the scale."
+
+    return f"""<div style="background:#FFFFFF;border:1px solid #D9E4F0;border-radius:12px;
+    padding:1.25rem 1.5rem 0.75rem;margin:0 0 1.5rem;
+    box-shadow:0 1px 3px rgba(10,22,40,.06);">
+  <p style="font-family:'DM Sans',sans-serif;font-size:0.68rem;font-weight:700;
+      text-transform:uppercase;letter-spacing:0.1em;color:#536780;margin:0 0 0.75rem;">{title_text}</p>
+  <svg viewBox="0 0 600 100" width="100%" xmlns="http://www.w3.org/2000/svg"
+       role="img" aria-label="{aria}">
+    {clip}
+    <g clip-path="url(#bmi-scale-clip)">{rects_svg}</g>
+    {labels_svg}
+    {ticks_svg}
+    {marker_svg}
+  </svg>
 </div>"""
 
 
