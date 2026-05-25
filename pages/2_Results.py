@@ -5,16 +5,21 @@ from core.classifications import (
     classify_who_asian,
     classify_ponderal,
     classify_new_bmi,
-    get_risk_color,
+)
+from core.styles import (
+    inject_css,
+    bmi_hero_html,
+    indices_table_html,
+    section_label,
+    RISK_PALETTE,
 )
 
 st.set_page_config(page_title="Results — BMI", page_icon="⚕️", layout="centered")
+inject_css()
 
-st.caption(
-    "This tool is for informational purposes only and does not replace clinical assessment."
-)
+st.caption("This tool is for informational purposes only and does not replace clinical assessment.")
 
-# --- Session state guard ---
+# ── Session state guard ───────────────────────────────────────────────────────
 if "bmi_inputs" not in st.session_state:
     st.warning("No data found. Please complete the Calculator first.")
     if st.button("Go to Calculator"):
@@ -22,77 +27,66 @@ if "bmi_inputs" not in st.session_state:
     st.stop()
 
 inputs = st.session_state["bmi_inputs"]
-weight_kg = inputs["weight_kg"]
-height_m = inputs["height_cm"] / 100.0
-height_cm = inputs["height_cm"]
-is_asian = inputs["ethnicity"] == "Asian (East/South)"
+weight_kg  = inputs["weight_kg"]
+height_m   = inputs["height_cm"] / 100.0
+height_cm  = inputs["height_cm"]
+is_asian   = inputs["ethnicity"] == "Asian (East/South)"
 
-# --- Calculations ---
+# ── Calculations ──────────────────────────────────────────────────────────────
 standard_bmi = calc_standard_bmi(weight_kg, height_m)
-new_bmi = calc_new_bmi(weight_kg, height_m)
-pi = calc_ponderal_index(weight_kg, height_m)
-bsa = calc_bsa(height_cm, weight_kg)
+new_bmi      = calc_new_bmi(weight_kg, height_m)
+pi           = calc_ponderal_index(weight_kg, height_m)
+bsa          = calc_bsa(height_cm, weight_kg)
 
-classify_fn = classify_who_asian if is_asian else classify_who_standard
-primary_category, primary_risk = classify_fn(standard_bmi)
-pi_category, pi_risk = classify_ponderal(pi)
-new_bmi_category, new_bmi_risk = classify_new_bmi(new_bmi)
+classify_fn                      = classify_who_asian if is_asian else classify_who_standard
+primary_category, primary_risk   = classify_fn(standard_bmi)
+pi_category,      pi_risk        = classify_ponderal(pi)
+new_bmi_category, new_bmi_risk   = classify_new_bmi(new_bmi)
 
-color = get_risk_color(primary_risk)
-
-# --- Section 1: Summary card ---
+# ── Section 1: Hero card ──────────────────────────────────────────────────────
 st.title("Results")
-st.markdown(f"**Age:** {inputs['age']} | **Sex:** {inputs['sex']} | **Ethnicity:** {inputs['ethnicity']}")
-st.markdown(f"**Height:** {inputs['height_display']} | **Weight:** {inputs['weight_display']}")
-st.divider()
+st.html(
+    bmi_hero_html(
+        bmi_val=standard_bmi,
+        category=primary_category,
+        risk=primary_risk,
+        age=inputs["age"],
+        sex=inputs["sex"],
+        ethnicity=inputs["ethnicity"],
+        height_display=inputs["height_display"],
+        weight_display=inputs["weight_display"],
+    ))
 
-col1, col2 = st.columns([1, 2])
-with col1:
-    st.metric("Standard BMI", f"{standard_bmi:.2f}")
-with col2:
-    st.markdown(f"### :{color}[{primary_category}]")
-    st.markdown(f"**Health risk:** {primary_risk}")
+# ── Section 2: All indices table ──────────────────────────────────────────────
+st.html(section_label("All Indices"))
+st.html(
+    indices_table_html(
+        standard_bmi=standard_bmi,
+        new_bmi=new_bmi,
+        pi=pi,
+        bsa=bsa,
+        primary_category=primary_category,
+        primary_risk=primary_risk,
+        new_bmi_category=new_bmi_category,
+        new_bmi_risk=new_bmi_risk,
+        pi_category=pi_category,
+        pi_risk=pi_risk,
+    ))
 
-st.divider()
-
-# --- Section 2: All indices table ---
-st.subheader("All Indices")
-
-table_data = {
-    "Index": ["Standard BMI", "New BMI (Peterson)", "Ponderal Index", "BSA (Mosteller)"],
-    "Value": [
-        f"{standard_bmi:.2f} kg/m²",
-        f"{new_bmi:.2f} kg/m²",
-        f"{pi:.2f} kg/m³",
-        f"{bsa:.3f} m²",
-    ],
-    "Classification": [
-        primary_category,
-        new_bmi_category,
-        pi_category,
-        "—",
-    ],
-    "Health Risk": [
-        primary_risk,
-        new_bmi_risk,
-        pi_risk,
-        "—",
-    ],
-}
-st.table(table_data)
-
-# --- Section 3: Ethnicity note ---
+# ── Section 3: Ethnicity note ─────────────────────────────────────────────────
 if is_asian:
     st.info(
         "**Asian cutoffs applied.** WHO recommends lower BMI thresholds for East and South Asian "
         "populations due to higher body fat percentage and cardiometabolic risk at equivalent BMI. "
-        "Overweight threshold: 23.0 (vs 25.0); Obese threshold: 27.5 (vs 30.0). "
+        "Overweight threshold: 23.0 (vs 25.0) · Obese threshold: 27.5 (vs 30.0). "
         "Source: WHO Expert Consultation, *The Lancet*, 2004.",
         icon="ℹ️",
     )
 
-# --- Section 4: Risk interpretation ---
-st.subheader("Risk Interpretation")
+st.divider()
+
+# ── Section 4: Risk interpretation ────────────────────────────────────────────
+st.html(section_label("Risk Interpretation"))
 
 risk_text = {
     "Low (but other risks)": (
@@ -129,19 +123,29 @@ risk_text = {
     ),
 }
 
-st.markdown(risk_text.get(primary_risk, "Interpretation not available for this risk level."))
-
-st.markdown(
-    """
-**References**
-1. World Health Organization. (1995). *Physical Status: The Use and Interpretation of Anthropometry*. WHO Technical Report Series 854.
-2. Peterson, C.M., et al. (2016). *A new formula for computing body mass index*. Obesity.
-3. Rohrer, F. (1921). *Der Index der Körperfülle als Maß des Ernährungszustandes*. München.
-4. Mosteller, R.D. (1987). *Simplified calculation of body surface area*. NEJM, 317(17), 1098.
-5. WHO Expert Consultation. (2004). *Appropriate BMI for Asian populations*. The Lancet, 363, 157–163.
-"""
-)
+p = RISK_PALETTE.get(primary_risk, RISK_PALETTE["—"])
+interp_text = risk_text.get(primary_risk, "Interpretation not available for this risk level.")
+st.html(
+    f'<div style="background:{p["bg"]};border:1px solid {p["border"]};border-left:4px solid {p["dot"]};'
+    f'border-radius:10px;padding:1rem 1.25rem;font-size:0.9rem;color:{p["text"]};'
+    f'font-family:\'DM Sans\',sans-serif;line-height:1.65;">{interp_text}</div>')
 
 st.divider()
-if st.button("← Recalculate"):
+
+# ── References ─────────────────────────────────────────────────────────────────
+st.html(section_label("References"))
+st.html(
+    """
+<ol style="font-size:0.82rem;color:#536780;line-height:1.8;
+    font-family:'DM Sans',sans-serif;padding-left:1.25rem;">
+  <li>World Health Organization. (1995). <em>Physical Status: The Use and Interpretation of Anthropometry</em>. WHO Technical Report Series 854.</li>
+  <li>Peterson, C.M., et al. (2016). A new formula for computing body mass index. <em>Obesity</em>.</li>
+  <li>Rohrer, F. (1921). Der Index der Körperfülle. <em>Münchener Medizinische Wochenschrift</em>.</li>
+  <li>Mosteller, R.D. (1987). Simplified calculation of body surface area. <em>NEJM</em>, 317(17), 1098.</li>
+  <li>WHO Expert Consultation. (2004). Appropriate BMI for Asian populations. <em>The Lancet</em>, 363, 157–163.</li>
+</ol>
+""")
+
+st.html("<div style='margin-top:1rem;'></div>")
+if st.button("← Recalculate", type="secondary"):
     st.switch_page("pages/1_Calculator.py")
