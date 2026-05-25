@@ -53,6 +53,38 @@ st.html(
         "('keep your waist to less than half your height'). [6]"
     ))
 
+st.html(formula_card_open("Ideal Body Weight — Hamwi Formula", "Hamwi, 1964"))
+st.latex(r"\text{IBW} = \begin{cases} 48.0 + 2.7 \times (h_{\text{in}} - 60) & \text{male} \\ 45.5 + 2.2 \times (h_{\text{in}} - 60) & \text{female} \end{cases}")
+st.html(
+    formula_card_close(
+        "The original IBW formula, developed for insulin dosing in diabetes management. "
+        "Height in inches above 5 feet (60 in). Result in kg. [7]"
+    ))
+
+st.html(formula_card_open("Ideal Body Weight — Devine Formula", "Devine, 1974"))
+st.latex(r"\text{IBW} = \begin{cases} 50.0 + 2.3 \times (h_{\text{in}} - 60) & \text{male} \\ 45.5 + 2.3 \times (h_{\text{in}} - 60) & \text{female} \end{cases}")
+st.html(
+    formula_card_close(
+        "The most widely used IBW formula in clinical practice, originally developed for "
+        "gentamicin dosing. Remains the standard reference in pharmacokinetics. [8]"
+    ))
+
+st.html(formula_card_open("Ideal Body Weight — Robinson Formula", "Robinson et al., 1983"))
+st.latex(r"\text{IBW} = \begin{cases} 52.0 + 1.9 \times (h_{\text{in}} - 60) & \text{male} \\ 49.0 + 1.7 \times (h_{\text{in}} - 60) & \text{female} \end{cases}")
+st.html(
+    formula_card_close(
+        "Developed as a refinement to the Devine formula with a smaller per-inch increment. "
+        "Used for drug dosage calculations and mechanical ventilation tidal volume settings. [9]"
+    ))
+
+st.html(formula_card_open("Ideal Body Weight — Miller Formula", "Miller et al., 1983"))
+st.latex(r"\text{IBW} = \begin{cases} 56.2 + 1.41 \times (h_{\text{in}} - 60) & \text{male} \\ 53.1 + 1.36 \times (h_{\text{in}} - 60) & \text{female} \end{cases}")
+st.html(
+    formula_card_close(
+        "Higher base weight with a smaller per-inch increment than other formulas, "
+        "resulting in higher IBW estimates for shorter and lower for taller individuals. [10]"
+    ))
+
 st.divider()
 
 # ── Classification Tables ─────────────────────────────────────────────────────
@@ -194,5 +226,9 @@ st.html(
   <li>Mosteller, R.D. (1987). Simplified calculation of body-surface area. <em>New England Journal of Medicine</em>, 317(17), 1098.</li>
   <li>WHO Expert Consultation. (2004). Appropriate body-mass index for Asian populations and its implications for policy and intervention strategies. <em>The Lancet</em>, 363(9403), 157–163.</li>
   <li>Ashwell, M., &amp; Gibson, S. (2016). Waist-to-height ratio as an indicator of 'early health risk': simpler and more predictive than using a 'matrix' based on BMI and waist circumference. <em>BMJ Open</em>, 6(3), e010159.</li>
+  <li>Hamwi, G.J. (1964). Therapy: changing dietary concepts. In: Danowski TS, editor. <em>Diabetes Mellitus: Diagnosis and Treatment</em>. Vol. 1. New York: American Diabetes Association; p. 73–78.</li>
+  <li>Devine, B.J. (1974). Gentamicin therapy. <em>Drug Intelligence and Clinical Pharmacy</em>, 8, 650–655.</li>
+  <li>Robinson, J.D., Lupkiewicz, S.M., Palenik, L., et al. (1983). Determination of ideal body weight for drug dosage calculations. <em>American Journal of Hospital Pharmacy</em>, 40(6), 1016–1019.</li>
+  <li>Miller, D.R., Carlson, J.D., Lloyd, B.J., et al. (1983). Determining ideal body weight. <em>American Journal of Hospital Pharmacy</em>, 40(10), 1622–1625.</li>
 </ol>
 """)

@@ -470,6 +470,106 @@ def indices_table_html(
 </div>"""
 
 
+def ibw_table_html(
+    weight_kg: float,
+    hamwi_kg: float,
+    devine_kg: float,
+    robinson_kg: float,
+    miller_kg: float,
+    is_imperial: bool = False,
+    sex: str = "Male",
+) -> str:
+    def _fmt(kg: float) -> str:
+        if is_imperial:
+            return f"{kg_to_lbs(kg):.1f} lbs"
+        return f"{kg:.1f} kg"
+
+    def _delta_chip(ibw_kg: float) -> str:
+        pct = (weight_kg - ibw_kg) / ibw_kg * 100
+        sign = "+" if pct >= 0 else ""
+        if pct > 20:
+            bg, fg = "#FEE2E2", "#7F1D1D"
+        elif pct > 5:
+            bg, fg = "#FEF3C7", "#78350F"
+        elif pct >= -5:
+            bg, fg = "#DBEAFE", "#1E3A8A"
+        else:
+            bg, fg = "#D1FAE5", "#065F46"
+        return (
+            f'<span style="background:{bg};color:{fg};border-radius:4px;'
+            f'padding:2px 8px;font-size:0.8rem;font-weight:600;'
+            f'font-family:\'DM Sans\',sans-serif;">{sign}{pct:.1f}%</span>'
+        )
+
+    avg_kg = (hamwi_kg + devine_kg + robinson_kg + miller_kg) / 4
+    avg_pct = (weight_kg - avg_kg) / avg_kg * 100
+    avg_sign = "+" if avg_pct >= 0 else ""
+    direction = "above" if avg_pct >= 0 else "below"
+
+    if avg_pct > 20:
+        sum_bg, sum_border, sum_text = "#FEE2E2", "#F87171", "#7F1D1D"
+    elif avg_pct > 5:
+        sum_bg, sum_border, sum_text = "#FEF3C7", "#F59E0B", "#78350F"
+    elif avg_pct >= -5:
+        sum_bg, sum_border, sum_text = "#DBEAFE", "#3B82F6", "#1E3A8A"
+    else:
+        sum_bg, sum_border, sum_text = "#D1FAE5", "#059669", "#065F46"
+
+    sex_note = " (averaged across male/female formulas)" if sex == "Other" else ""
+    short_height_note = ""
+
+    formulas = [
+        ("Hamwi", "1964", hamwi_kg),
+        ("Devine", "1974", devine_kg),
+        ("Robinson", "1983", robinson_kg),
+        ("Miller", "1983", miller_kg),
+    ]
+    tbody = ""
+    for i, (name, year, ibw_kg) in enumerate(formulas):
+        bg = "background:#FAFCFF" if i % 2 else "background:#FFFFFF"
+        tbody += f"""
+        <tr style="{bg};border-bottom:1px solid #D9E4F0;">
+            <td style="padding:0.8rem 1.1rem;font-family:'DM Sans',sans-serif;
+                font-size:0.9rem;color:#0D1B2E;font-weight:500;">{name}
+                <span style="font-size:0.72rem;color:#536780;margin-left:4px;">({year})</span>
+            </td>
+            <td style="padding:0.8rem 1.1rem;">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:0.88rem;
+                    font-weight:600;color:#1E3A5F;">{_fmt(ibw_kg)}</span>
+            </td>
+            <td style="padding:0.8rem 1.1rem;">{_delta_chip(ibw_kg)}</td>
+        </tr>"""
+
+    return f"""
+<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0.5rem 0 0.75rem;">
+<div style="border-radius:12px;overflow:hidden;min-width:360px;
+    box-shadow:0 1px 3px rgba(10,22,40,.08),0 1px 2px rgba(10,22,40,.05);">
+<table style="width:100%;border-collapse:collapse;">
+    <thead>
+        <tr style="background:#0A1628;">
+            <th scope="col" style="padding:0.7rem 1.1rem;text-align:left;color:#8BB8E8;
+                font-family:'DM Sans',sans-serif;font-size:0.65rem;font-weight:700;
+                text-transform:uppercase;letter-spacing:0.1em;border:none;">Formula</th>
+            <th scope="col" style="padding:0.7rem 1.1rem;text-align:left;color:#8BB8E8;
+                font-family:'DM Sans',sans-serif;font-size:0.65rem;font-weight:700;
+                text-transform:uppercase;letter-spacing:0.1em;border:none;">IBW</th>
+            <th scope="col" style="padding:0.7rem 1.1rem;text-align:left;color:#8BB8E8;
+                font-family:'DM Sans',sans-serif;font-size:0.65rem;font-weight:700;
+                text-transform:uppercase;letter-spacing:0.1em;border:none;">% from Actual</th>
+        </tr>
+    </thead>
+    <tbody>{tbody}</tbody>
+</table>
+</div>
+</div>
+<div style="background:{sum_bg};border:1px solid {sum_border};border-left:4px solid {sum_border};
+    border-radius:10px;padding:0.85rem 1.25rem;font-size:0.88rem;color:{sum_text};
+    font-family:'DM Sans',sans-serif;line-height:1.6;margin-bottom:0.5rem;">
+    <b>Average IBW across all formulas: {_fmt(avg_kg)}</b>{sex_note}.
+    Your actual weight is <b>{avg_sign}{avg_pct:.1f}%</b> {direction} the average IBW. [7–10]
+</div>"""
+
+
 def section_label(text: str) -> str:
     return (
         f'<p role="heading" aria-level="2" style="font-family:\'DM Sans\',sans-serif;font-size:0.68rem;'

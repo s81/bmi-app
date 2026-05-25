@@ -1,5 +1,8 @@
 import streamlit as st
-from core.bmi import calc_standard_bmi, calc_new_bmi, calc_ponderal_index, calc_bsa, calc_whtr
+from core.bmi import (
+    calc_standard_bmi, calc_new_bmi, calc_ponderal_index, calc_bsa,
+    calc_whtr, calc_ibw_hamwi, calc_ibw_devine, calc_ibw_robinson, calc_ibw_miller,
+)
 from core.classifications import (
     classify_who_standard,
     classify_who_asian,
@@ -11,6 +14,7 @@ from core.styles import (
     inject_css,
     bmi_hero_html,
     indices_table_html,
+    ibw_table_html,
     section_label,
     RISK_PALETTE,
 )
@@ -47,6 +51,13 @@ new_bmi_category, new_bmi_risk   = classify_new_bmi(new_bmi)
 waist_cm = inputs.get("waist_cm")
 whtr = calc_whtr(waist_cm, height_cm) if waist_cm else None
 whtr_category, whtr_risk = classify_whtr(whtr) if whtr is not None else ("—", "—")
+
+sex = inputs["sex"]
+is_imperial = "lbs" in inputs["weight_display"]
+ibw_hamwi    = calc_ibw_hamwi(height_cm, sex)
+ibw_devine   = calc_ibw_devine(height_cm, sex)
+ibw_robinson = calc_ibw_robinson(height_cm, sex)
+ibw_miller   = calc_ibw_miller(height_cm, sex)
 
 # ── Section 1: Hero card ──────────────────────────────────────────────────────
 st.title("Results")
@@ -115,7 +126,24 @@ if is_asian:
 
 st.divider()
 
-# ── Section 6: Risk interpretation ────────────────────────────────────────────
+# ── Section 6: Ideal Body Weight ──────────────────────────────────────────────
+st.html(section_label("Ideal Body Weight"))
+if height_cm < 152.4:
+    st.caption("Note: IBW formulas are validated for adults ≥ 5 ft (152.4 cm). Values below are extrapolated base weights.")
+st.html(
+    ibw_table_html(
+        weight_kg=weight_kg,
+        hamwi_kg=ibw_hamwi,
+        devine_kg=ibw_devine,
+        robinson_kg=ibw_robinson,
+        miller_kg=ibw_miller,
+        is_imperial=is_imperial,
+        sex=sex,
+    ))
+
+st.divider()
+
+# ── Section 7: Risk interpretation ────────────────────────────────────────────
 st.html(section_label("Risk Interpretation"))
 
 risk_text = {
@@ -174,6 +202,10 @@ st.html(
   <li>Mosteller, R.D. (1987). Simplified calculation of body surface area. <em>NEJM</em>, 317(17), 1098.</li>
   <li>WHO Expert Consultation. (2004). Appropriate BMI for Asian populations. <em>The Lancet</em>, 363, 157–163.</li>
   <li>Ashwell, M., &amp; Gibson, S. (2016). Waist-to-height ratio as an indicator of 'early health risk'. <em>BMJ Open</em>, 6(3), e010159.</li>
+  <li>Hamwi, G.J. (1964). Therapy: changing dietary concepts. <em>Diabetes Mellitus: Diagnosis and Treatment</em>. American Diabetes Association.</li>
+  <li>Devine, B.J. (1974). Gentamicin therapy. <em>Drug Intelligence and Clinical Pharmacy</em>, 8, 650–655.</li>
+  <li>Robinson, J.D., et al. (1983). Determination of ideal body weight for drug dosage calculations. <em>American Journal of Hospital Pharmacy</em>, 40(6), 1016–1019.</li>
+  <li>Miller, D.R., et al. (1983). Determining ideal body weight. <em>American Journal of Hospital Pharmacy</em>, 40(10), 1622–1625.</li>
 </ol>
 """)
 
