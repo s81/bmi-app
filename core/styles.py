@@ -470,6 +470,50 @@ def indices_table_html(
 </div>"""
 
 
+def bf_table_html(rows: list[tuple[str, float, str, str]]) -> str:
+    """rows: [(method_name, bf_pct, category, risk_key), ...]"""
+    tbody = ""
+    for i, (method, bf_pct, category, risk) in enumerate(rows):
+        bg = "background:#FAFCFF" if i % 2 else "background:#FFFFFF"
+        tbody += f"""
+        <tr style="{bg};border-bottom:1px solid #D9E4F0;">
+            <td style="padding:0.8rem 1.1rem;font-family:'DM Sans',sans-serif;
+                font-size:0.9rem;color:#0D1B2E;font-weight:500;">{method}</td>
+            <td style="padding:0.8rem 1.1rem;">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:0.88rem;
+                    font-weight:600;color:#1E3A5F;">{bf_pct:.1f}%</span>
+            </td>
+            <td style="padding:0.8rem 1.1rem;font-family:'DM Sans',sans-serif;
+                font-size:0.88rem;color:#536780;">{category}</td>
+            <td style="padding:0.8rem 1.1rem;">{risk_chip(risk)}</td>
+        </tr>"""
+    return f"""
+<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0.5rem 0 1rem;">
+<div style="border-radius:12px;overflow:hidden;min-width:400px;
+    box-shadow:0 1px 3px rgba(10,22,40,.08),0 1px 2px rgba(10,22,40,.05);">
+<table style="width:100%;border-collapse:collapse;">
+    <thead>
+        <tr style="background:#0A1628;">
+            <th scope="col" style="padding:0.7rem 1.1rem;text-align:left;color:#8BB8E8;
+                font-family:'DM Sans',sans-serif;font-size:0.65rem;font-weight:700;
+                text-transform:uppercase;letter-spacing:0.1em;border:none;">Method</th>
+            <th scope="col" style="padding:0.7rem 1.1rem;text-align:left;color:#8BB8E8;
+                font-family:'DM Sans',sans-serif;font-size:0.65rem;font-weight:700;
+                text-transform:uppercase;letter-spacing:0.1em;border:none;">Body Fat %</th>
+            <th scope="col" style="padding:0.7rem 1.1rem;text-align:left;color:#8BB8E8;
+                font-family:'DM Sans',sans-serif;font-size:0.65rem;font-weight:700;
+                text-transform:uppercase;letter-spacing:0.1em;border:none;">Category</th>
+            <th scope="col" style="padding:0.7rem 1.1rem;text-align:left;color:#8BB8E8;
+                font-family:'DM Sans',sans-serif;font-size:0.65rem;font-weight:700;
+                text-transform:uppercase;letter-spacing:0.1em;border:none;">Risk</th>
+        </tr>
+    </thead>
+    <tbody>{tbody}</tbody>
+</table>
+</div>
+</div>"""
+
+
 def ibw_table_html(
     weight_kg: float,
     hamwi_kg: float,
@@ -566,7 +610,7 @@ def ibw_table_html(
     border-radius:10px;padding:0.85rem 1.25rem;font-size:0.88rem;color:{sum_text};
     font-family:'DM Sans',sans-serif;line-height:1.6;margin-bottom:0.5rem;">
     <b>Average IBW across all formulas: {_fmt(avg_kg)}</b>{sex_note}.
-    Your actual weight is <b>{avg_sign}{avg_pct:.1f}%</b> {direction} the average IBW. [7–10]
+    Your actual weight is <b>{avg_sign}{avg_pct:.1f}%</b> {direction} the average IBW. [10–13]
 </div>"""
 
 

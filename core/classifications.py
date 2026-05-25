@@ -48,6 +48,22 @@ def classify_whtr(whtr: float) -> tuple[str, str]:
         return ("High Risk", "High")
 
 
+def classify_body_fat(bf_pct: float, sex: str) -> tuple[str, str]:
+    """ACE body fat classification. 'Other' uses female thresholds."""
+    if sex == "Male":
+        if bf_pct < 6:   return ("Essential Fat", "Low (but other risks)")
+        elif bf_pct < 14: return ("Athletic",      "Average")
+        elif bf_pct < 18: return ("Fitness",        "Average")
+        elif bf_pct < 25: return ("Acceptable",     "Average")
+        else:             return ("Obese",           "High")
+    else:
+        if bf_pct < 14:   return ("Essential Fat", "Low (but other risks)")
+        elif bf_pct < 21: return ("Athletic",       "Average")
+        elif bf_pct < 25: return ("Fitness",        "Average")
+        elif bf_pct < 32: return ("Acceptable",     "Average")
+        else:             return ("Obese",           "High")
+
+
 def get_risk_color(risk: str) -> str:
     mapping = {
         "Low (but other risks)": "blue",

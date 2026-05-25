@@ -58,7 +58,7 @@ st.latex(r"\text{IBW} = \begin{cases} 48.0 + 2.7 \times (h_{\text{in}} - 60) & \
 st.html(
     formula_card_close(
         "The original IBW formula, developed for insulin dosing in diabetes management. "
-        "Height in inches above 5 feet (60 in). Result in kg. [7]"
+        "Height in inches above 5 feet (60 in). Result in kg. [10]"
     ))
 
 st.html(formula_card_open("Ideal Body Weight — Devine Formula", "Devine, 1974"))
@@ -66,7 +66,7 @@ st.latex(r"\text{IBW} = \begin{cases} 50.0 + 2.3 \times (h_{\text{in}} - 60) & \
 st.html(
     formula_card_close(
         "The most widely used IBW formula in clinical practice, originally developed for "
-        "gentamicin dosing. Remains the standard reference in pharmacokinetics. [8]"
+        "gentamicin dosing. Remains the standard reference in pharmacokinetics. [11]"
     ))
 
 st.html(formula_card_open("Ideal Body Weight — Robinson Formula", "Robinson et al., 1983"))
@@ -74,7 +74,7 @@ st.latex(r"\text{IBW} = \begin{cases} 52.0 + 1.9 \times (h_{\text{in}} - 60) & \
 st.html(
     formula_card_close(
         "Developed as a refinement to the Devine formula with a smaller per-inch increment. "
-        "Used for drug dosage calculations and mechanical ventilation tidal volume settings. [9]"
+        "Used for drug dosage calculations and mechanical ventilation tidal volume settings. [12]"
     ))
 
 st.html(formula_card_open("Ideal Body Weight — Miller Formula", "Miller et al., 1983"))
@@ -82,7 +82,26 @@ st.latex(r"\text{IBW} = \begin{cases} 56.2 + 1.41 \times (h_{\text{in}} - 60) & 
 st.html(
     formula_card_close(
         "Higher base weight with a smaller per-inch increment than other formulas, "
-        "resulting in higher IBW estimates for shorter and lower for taller individuals. [10]"
+        "resulting in higher IBW estimates for shorter and lower for taller individuals. [13]"
+    ))
+
+st.html(formula_card_open("Body Fat % — U.S. Navy Method", "Hodgdon & Beckett, 1984"))
+st.latex(r"""\%\text{BF}_{\text{male}} = \frac{495}{1.0324 - 0.19077\log_{10}(W - N) + 0.15456\log_{10}(H)} - 450""")
+st.latex(r"""\%\text{BF}_{\text{female}} = \frac{495}{1.29579 - 0.35004\log_{10}(W + P - N) + 0.22100\log_{10}(H)} - 450""")
+st.html(
+    formula_card_close(
+        "W = waist (cm) · N = neck (cm) · P = hip (cm, female only) · H = height (cm). "
+        "Validated on U.S. military personnel; widely used as a no-equipment field estimate. "
+        "Accuracy ±3–4% compared to hydrostatic weighing. [7]"
+    ))
+
+st.html(formula_card_open("Body Fat % — Deurenberg BMI Method", "Deurenberg et al., 1991"))
+st.latex(r"\%\text{BF} = 1.20 \times \text{BMI} + 0.23 \times \text{age} - 10.8 \times S - 5.4")
+st.html(
+    formula_card_close(
+        "S = 1 for male, 0 for female. Requires no additional measurements beyond BMI and age. "
+        "Less accurate than circumference-based methods (SEE ≈ 4.1%), but useful when "
+        "anthropometric measurements are unavailable. [8]"
     ))
 
 st.divider()
@@ -212,6 +231,42 @@ st.html(
         risk_col=2,
     ))
 
+st.html(
+    '<p style="font-family:\'DM Serif Display\',serif;font-size:1.15rem;'
+    'color:#0A1628;margin:0.5rem 0 0.25rem;">Body Fat % — ACE Standards</p>'
+    '<p style="font-size:0.82rem;color:#536780;font-family:\'DM Sans\',sans-serif;'
+    'margin:0 0 0.5rem;line-height:1.5;">American Council on Exercise classification. [9]</p>')
+st.html(
+    '<p style="font-size:0.82rem;color:#536780;font-family:\'DM Sans\',sans-serif;'
+    'margin:0 0 0.25rem;font-weight:600;">Male</p>')
+st.html(
+    styled_table(
+        headers=["Body Fat %", "Category", "Health Risk"],
+        rows=[
+            ("< 6%",    "Essential Fat", "Low (but other risks)"),
+            ("6–13%",   "Athletic",      "Average"),
+            ("14–17%",  "Fitness",       "Average"),
+            ("18–24%",  "Acceptable",    "Average"),
+            ("≥ 25%",   "Obese",         "High"),
+        ],
+        risk_col=2,
+    ))
+st.html(
+    '<p style="font-size:0.82rem;color:#536780;font-family:\'DM Sans\',sans-serif;'
+    'margin:0.5rem 0 0.25rem;font-weight:600;">Female</p>')
+st.html(
+    styled_table(
+        headers=["Body Fat %", "Category", "Health Risk"],
+        rows=[
+            ("< 14%",   "Essential Fat", "Low (but other risks)"),
+            ("14–20%",  "Athletic",      "Average"),
+            ("21–24%",  "Fitness",       "Average"),
+            ("25–31%",  "Acceptable",    "Average"),
+            ("≥ 32%",   "Obese",         "High"),
+        ],
+        risk_col=2,
+    ))
+
 st.divider()
 
 # ── References ────────────────────────────────────────────────────────────────
@@ -226,6 +281,9 @@ st.html(
   <li>Mosteller, R.D. (1987). Simplified calculation of body-surface area. <em>New England Journal of Medicine</em>, 317(17), 1098.</li>
   <li>WHO Expert Consultation. (2004). Appropriate body-mass index for Asian populations and its implications for policy and intervention strategies. <em>The Lancet</em>, 363(9403), 157–163.</li>
   <li>Ashwell, M., &amp; Gibson, S. (2016). Waist-to-height ratio as an indicator of 'early health risk': simpler and more predictive than using a 'matrix' based on BMI and waist circumference. <em>BMJ Open</em>, 6(3), e010159.</li>
+  <li>Hodgdon, J.A., &amp; Beckett, M.B. (1984). Prediction of percent body fat for U.S. Navy men and women from body circumference and height. <em>Naval Health Research Center Technical Report</em> 84-29.</li>
+  <li>Deurenberg, P., Weststrate, J.A., &amp; Seidell, J.C. (1991). Body mass index as a measure of body fatness. <em>British Journal of Nutrition</em>, 65(2), 105–114.</li>
+  <li>American Council on Exercise. (2020). <em>ACE Personal Trainer Manual</em> (6th ed.). San Diego: ACE.</li>
   <li>Hamwi, G.J. (1964). Therapy: changing dietary concepts. In: Danowski TS, editor. <em>Diabetes Mellitus: Diagnosis and Treatment</em>. Vol. 1. New York: American Diabetes Association; p. 73–78.</li>
   <li>Devine, B.J. (1974). Gentamicin therapy. <em>Drug Intelligence and Clinical Pharmacy</em>, 8, 650–655.</li>
   <li>Robinson, J.D., Lupkiewicz, S.M., Palenik, L., et al. (1983). Determination of ideal body weight for drug dosage calculations. <em>American Journal of Hospital Pharmacy</em>, 40(6), 1016–1019.</li>

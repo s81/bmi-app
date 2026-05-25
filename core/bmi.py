@@ -37,6 +37,25 @@ def calc_whtr(waist_cm: float, height_cm: float) -> float:
     return waist_cm / height_cm
 
 
+def calc_bf_navy_male(height_cm: float, waist_cm: float, neck_cm: float) -> float | None:
+    val = waist_cm - neck_cm
+    if val <= 0:
+        return None
+    return 495 / (1.0324 - 0.19077 * math.log10(val) + 0.15456 * math.log10(height_cm)) - 450
+
+
+def calc_bf_navy_female(height_cm: float, waist_cm: float, hip_cm: float, neck_cm: float) -> float | None:
+    val = waist_cm + hip_cm - neck_cm
+    if val <= 0:
+        return None
+    return 495 / (1.29579 - 0.35004 * math.log10(val) + 0.22100 * math.log10(height_cm)) - 450
+
+
+def calc_bf_deurenberg(bmi: float, age: float, sex: str) -> float:
+    sex_factor = 1.0 if sex == "Male" else (0.0 if sex == "Female" else 0.5)
+    return 1.20 * bmi + 0.23 * age - 10.8 * sex_factor - 5.4
+
+
 def _inches_over_5ft(height_cm: float) -> float:
     return max(0.0, height_cm / 2.54 - 60.0)
 

@@ -62,21 +62,33 @@ else:
             "Weight (kg)", min_value=2.0, max_value=700.0, value=70.0, step=0.5
         )
 
-# ── Waist circumference (optional) ────────────────────────────────────────────
-st.html(section_label("Waist Circumference"))
-st.caption("Optional — enables the Waist-to-Height Ratio (WHtR) calculation. Measure at the narrowest point, just above the navel.")
-col_waist, _ = st.columns([1, 1])
-with col_waist:
-    if imperial:
-        waist_raw = st.number_input(
-            "Waist (in) — leave at 0 to skip",
-            min_value=0.0, max_value=100.0, value=0.0, step=0.5,
-        )
-    else:
-        waist_raw = st.number_input(
-            "Waist (cm) — leave at 0 to skip",
-            min_value=0.0, max_value=250.0, value=0.0, step=0.5,
-        )
+# ── Circumference measurements (optional) ─────────────────────────────────────
+st.html(section_label("Circumference Measurements"))
+st.caption(
+    "Optional — waist enables WHtR · waist + neck enables Navy body fat (male) · "
+    "waist + neck + hip enables Navy body fat (female/other) · leave unused fields at 0."
+)
+col_w2, col_n, col_h2 = st.columns(3)
+if imperial:
+    with col_w2:
+        waist_raw = st.number_input("Waist (in)", min_value=0.0, max_value=100.0, value=0.0, step=0.5,
+                                    help="Measure at narrowest point, just above the navel.")
+    with col_n:
+        neck_raw = st.number_input("Neck (in)", min_value=0.0, max_value=30.0, value=0.0, step=0.5,
+                                   help="Measure just below the larynx (Adam's apple).")
+    with col_h2:
+        hip_raw = st.number_input("Hip (in)", min_value=0.0, max_value=100.0, value=0.0, step=0.5,
+                                  help="Measure at widest point. Used in female Navy body fat formula.")
+else:
+    with col_w2:
+        waist_raw = st.number_input("Waist (cm)", min_value=0.0, max_value=250.0, value=0.0, step=0.5,
+                                    help="Measure at narrowest point, just above the navel.")
+    with col_n:
+        neck_raw = st.number_input("Neck (cm)", min_value=0.0, max_value=80.0, value=0.0, step=0.5,
+                                   help="Measure just below the larynx (Adam's apple).")
+    with col_h2:
+        hip_raw = st.number_input("Hip (cm)", min_value=0.0, max_value=250.0, value=0.0, step=0.5,
+                                  help="Measure at widest point. Used in female Navy body fat formula.")
 
 st.divider()
 
@@ -85,6 +97,8 @@ errors = []
 height_cm = inches_to_cm(height_raw) if imperial else height_raw
 weight_kg = lbs_to_kg(weight_raw) if imperial else weight_raw
 waist_cm  = inches_to_cm(waist_raw) if imperial else waist_raw
+neck_cm   = inches_to_cm(neck_raw)  if imperial else neck_raw
+hip_cm    = inches_to_cm(hip_raw)   if imperial else hip_raw
 
 if not (50.0 <= height_cm <= 300.0):
     errors.append(f"Height {height_cm:.1f} cm is outside physiological range (50–300 cm).")
@@ -106,5 +120,7 @@ if st.button("Calculate →", type="primary", disabled=bool(errors), use_contain
         "weight_display": f"{weight_raw} {'lbs' if imperial else 'kg'}",
         "waist_cm": waist_cm if waist_raw > 0 else None,
         "waist_display": f"{waist_raw} {'in' if imperial else 'cm'}" if waist_raw > 0 else None,
+        "neck_cm": neck_cm if neck_raw > 0 else None,
+        "hip_cm":  hip_cm  if hip_raw  > 0 else None,
     }
     st.switch_page("pages/2_Results.py")

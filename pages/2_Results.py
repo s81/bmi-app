@@ -2,6 +2,7 @@ import streamlit as st
 from core.bmi import (
     calc_standard_bmi, calc_new_bmi, calc_ponderal_index, calc_bsa,
     calc_whtr, calc_ibw_hamwi, calc_ibw_devine, calc_ibw_robinson, calc_ibw_miller,
+    calc_bf_navy_male, calc_bf_navy_female, calc_bf_deurenberg,
 )
 from core.classifications import (
     classify_who_standard,
@@ -9,12 +10,14 @@ from core.classifications import (
     classify_ponderal,
     classify_new_bmi,
     classify_whtr,
+    classify_body_fat,
 )
 from core.styles import (
     inject_css,
     bmi_hero_html,
     indices_table_html,
     ibw_table_html,
+    bf_table_html,
     section_label,
     RISK_PALETTE,
 )
@@ -54,6 +57,37 @@ whtr_category, whtr_risk = classify_whtr(whtr) if whtr is not None else ("—", 
 
 sex = inputs["sex"]
 is_imperial = "lbs" in inputs["weight_display"]
+neck_cm = inputs.get("neck_cm")
+hip_cm  = inputs.get("hip_cm")
+
+# ── Body fat calculations ─────────────────────────────────────────────────────
+bf_rows = []
+if waist_cm and neck_cm:
+    if sex == "Male":
+        bf_navy = calc_bf_navy_male(height_cm, waist_cm, neck_cm)
+        if bf_navy is not None:
+            cat, risk = classify_body_fat(bf_navy, sex)
+            bf_rows.append(("U.S. Navy (male formula)", bf_navy, cat, risk))
+    elif sex == "Female":
+        if hip_cm:
+            bf_navy = calc_bf_navy_female(height_cm, waist_cm, hip_cm, neck_cm)
+            if bf_navy is not None:
+                cat, risk = classify_body_fat(bf_navy, sex)
+                bf_rows.append(("U.S. Navy (female formula)", bf_navy, cat, risk))
+    else:  # Other
+        bf_m = calc_bf_navy_male(height_cm, waist_cm, neck_cm)
+        if bf_m is not None:
+            cat, risk = classify_body_fat(bf_m, "Male")
+            bf_rows.append(("U.S. Navy (male formula)", bf_m, cat, risk))
+        if hip_cm:
+            bf_f = calc_bf_navy_female(height_cm, waist_cm, hip_cm, neck_cm)
+            if bf_f is not None:
+                cat, risk = classify_body_fat(bf_f, "Female")
+                bf_rows.append(("U.S. Navy (female formula)", bf_f, cat, risk))
+
+bf_deurenberg = calc_bf_deurenberg(standard_bmi, inputs["age"], sex)
+cat, risk = classify_body_fat(bf_deurenberg, sex)
+bf_rows.append(("Deurenberg (BMI-based)", bf_deurenberg, cat, risk))
 ibw_hamwi    = calc_ibw_hamwi(height_cm, sex)
 ibw_devine   = calc_ibw_devine(height_cm, sex)
 ibw_robinson = calc_ibw_robinson(height_cm, sex)
@@ -126,7 +160,18 @@ if is_asian:
 
 st.divider()
 
-# ── Section 6: Ideal Body Weight ──────────────────────────────────────────────
+# ── Section 6: Body Composition ───────────────────────────────────────────────
+st.html(section_label("Body Composition"))
+st.html(bf_table_html(bf_rows))
+if not (waist_cm and neck_cm):
+    st.caption(
+        "Add waist + neck measurements on the Calculator page to enable the U.S. Navy body fat formula. "
+        "Female/Other: hip measurement also required."
+    )
+
+st.divider()
+
+# ── Section 7: Ideal Body Weight ──────────────────────────────────────────────
 st.html(section_label("Ideal Body Weight"))
 if height_cm < 152.4:
     st.caption("Note: IBW formulas are validated for adults ≥ 5 ft (152.4 cm). Values below are extrapolated base weights.")
@@ -202,6 +247,9 @@ st.html(
   <li>Mosteller, R.D. (1987). Simplified calculation of body surface area. <em>NEJM</em>, 317(17), 1098.</li>
   <li>WHO Expert Consultation. (2004). Appropriate BMI for Asian populations. <em>The Lancet</em>, 363, 157–163.</li>
   <li>Ashwell, M., &amp; Gibson, S. (2016). Waist-to-height ratio as an indicator of 'early health risk'. <em>BMJ Open</em>, 6(3), e010159.</li>
+  <li>Hodgdon, J.A., &amp; Beckett, M.B. (1984). Prediction of percent body fat for U.S. Navy men and women from body circumference and height. <em>Naval Health Research Center Technical Report</em> 84-29.</li>
+  <li>Deurenberg, P., Weststrate, J.A., &amp; Seidell, J.C. (1991). Body mass index as a measure of body fatness. <em>British Journal of Nutrition</em>, 65(2), 105–114.</li>
+  <li>American Council on Exercise. (2020). <em>ACE Personal Trainer Manual</em> (6th ed.). San Diego: ACE.</li>
   <li>Hamwi, G.J. (1964). Therapy: changing dietary concepts. <em>Diabetes Mellitus: Diagnosis and Treatment</em>. American Diabetes Association.</li>
   <li>Devine, B.J. (1974). Gentamicin therapy. <em>Drug Intelligence and Clinical Pharmacy</em>, 8, 650–655.</li>
   <li>Robinson, J.D., et al. (1983). Determination of ideal body weight for drug dosage calculations. <em>American Journal of Hospital Pharmacy</em>, 40(6), 1016–1019.</li>

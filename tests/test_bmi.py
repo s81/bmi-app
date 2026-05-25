@@ -31,6 +31,7 @@ from core.bmi import (
     calc_standard_bmi, calc_new_bmi, calc_ponderal_index, calc_bsa,
     calc_whtr,
     calc_ibw_hamwi, calc_ibw_devine, calc_ibw_robinson, calc_ibw_miller,
+    calc_bf_navy_male, calc_bf_navy_female, calc_bf_deurenberg,
 )
 
 
@@ -125,3 +126,39 @@ def test_ibw_other_sex_is_average():
     female = calc_ibw_hamwi(175.0, "Female")
     other  = calc_ibw_hamwi(175.0, "Other")
     assert abs(other - (male + female) / 2) < 0.001
+
+
+# ── Body fat ──────────────────────────────────────────────────────────────────
+# Navy male: height=175cm, waist=80cm, neck=38cm → ~12.9%
+def test_bf_navy_male_known_value():
+    result = calc_bf_navy_male(175.0, 80.0, 38.0)
+    assert result is not None
+    assert abs(result - 12.86) < 0.1
+
+# Navy female: height=165cm, waist=70cm, hip=95cm, neck=33cm → ~24.3%
+def test_bf_navy_female_known_value():
+    result = calc_bf_navy_female(165.0, 70.0, 95.0, 33.0)
+    assert result is not None
+    assert abs(result - 24.34) < 0.1
+
+def test_bf_navy_male_invalid_returns_none():
+    # waist <= neck is physiologically impossible; must return None
+    assert calc_bf_navy_male(175.0, 35.0, 38.0) is None
+
+def test_bf_navy_female_invalid_returns_none():
+    assert calc_bf_navy_female(165.0, 10.0, 10.0, 40.0) is None
+
+# Deurenberg: BMI=22.86, age=30
+def test_bf_deurenberg_male():
+    result = calc_bf_deurenberg(22.86, 30, "Male")
+    assert abs(result - 18.13) < 0.1
+
+def test_bf_deurenberg_female():
+    result = calc_bf_deurenberg(22.86, 30, "Female")
+    assert abs(result - 28.93) < 0.1
+
+def test_bf_deurenberg_other_is_between():
+    male   = calc_bf_deurenberg(22.86, 30, "Male")
+    female = calc_bf_deurenberg(22.86, 30, "Female")
+    other  = calc_bf_deurenberg(22.86, 30, "Other")
+    assert male < other < female

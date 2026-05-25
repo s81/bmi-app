@@ -4,6 +4,7 @@ from core.classifications import (
     classify_ponderal,
     classify_new_bmi,
     classify_whtr,
+    classify_body_fat,
     get_risk_color,
 )
 
@@ -89,6 +90,49 @@ def test_whtr_high_risk():
 
 def test_whtr_high_risk_lower_boundary():
     assert classify_whtr(0.6) == ("High Risk", "High")
+
+
+# Body fat — male ACE thresholds
+def test_bf_male_essential():
+    assert classify_body_fat(4.0, "Male") == ("Essential Fat", "Low (but other risks)")
+
+def test_bf_male_athletic():
+    assert classify_body_fat(10.0, "Male") == ("Athletic", "Average")
+
+def test_bf_male_fitness():
+    assert classify_body_fat(15.0, "Male") == ("Fitness", "Average")
+
+def test_bf_male_acceptable():
+    assert classify_body_fat(20.0, "Male") == ("Acceptable", "Average")
+
+def test_bf_male_obese():
+    assert classify_body_fat(28.0, "Male") == ("Obese", "High")
+
+def test_bf_male_athletic_lower_boundary():
+    assert classify_body_fat(6.0, "Male") == ("Athletic", "Average")
+
+def test_bf_male_obese_lower_boundary():
+    assert classify_body_fat(25.0, "Male") == ("Obese", "High")
+
+# Body fat — female ACE thresholds
+def test_bf_female_essential():
+    assert classify_body_fat(12.0, "Female") == ("Essential Fat", "Low (but other risks)")
+
+def test_bf_female_athletic():
+    assert classify_body_fat(17.0, "Female") == ("Athletic", "Average")
+
+def test_bf_female_fitness():
+    assert classify_body_fat(22.0, "Female") == ("Fitness", "Average")
+
+def test_bf_female_acceptable():
+    assert classify_body_fat(28.0, "Female") == ("Acceptable", "Average")
+
+def test_bf_female_obese():
+    assert classify_body_fat(35.0, "Female") == ("Obese", "High")
+
+def test_bf_other_uses_female_thresholds():
+    assert classify_body_fat(17.0, "Other") == ("Athletic", "Average")
+    assert classify_body_fat(10.0, "Other") == ("Essential Fat", "Low (but other risks)")
 
 
 # Risk color
