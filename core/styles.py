@@ -293,6 +293,19 @@ label p {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* ── Mobile ────────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  [data-testid="stMainBlockContainer"] {
+    padding-top: 1.25rem !important;
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+  h1 { font-size: 1.75rem !important; line-height: 1.2 !important; }
+  .bmi-hero { flex-direction: column !important; }
+  .bmi-hero-num { font-size: 3rem !important; }
+  .bmi-hero-right { text-align: left !important; }
+}
 </style>
 """
 
@@ -326,7 +339,7 @@ def bmi_hero_html(
     cat_color = CATEGORY_HERO.get(category, "#0F6CBD")
     p = RISK_PALETTE.get(risk, RISK_PALETTE["—"])
     return f"""
-<div style="
+<div class="bmi-hero" style="
     background: linear-gradient(135deg, #0A1628 0%, #1E3A5F 100%);
     border-radius: 16px;
     padding: 2rem 2.5rem;
@@ -342,13 +355,13 @@ def bmi_hero_html(
         <p style="color:#8BB8E8;font-size:0.68rem;text-transform:uppercase;
             letter-spacing:0.12em;margin:0 0 0.4rem;
             font-family:'DM Sans',sans-serif;font-weight:700;">Standard BMI</p>
-        <p style="color:#FFFFFF;font-size:4rem;
+        <p class="bmi-hero-num" style="color:#FFFFFF;font-size:4rem;
             font-family:'JetBrains Mono','Courier New',monospace;
             font-weight:600;margin:0;line-height:1;letter-spacing:-0.02em;">{bmi_val:.2f}</p>
         <p style="color:#536780;font-size:0.78rem;margin:0.3rem 0 0;
             font-family:'DM Sans',sans-serif;">kg / m²</p>
     </div>
-    <div style="text-align:right;">
+    <div class="bmi-hero-right" style="text-align:right;">
         <p style="color:{cat_color};font-size:1.9rem;
             font-family:'DM Serif Display',Georgia,serif;
             font-weight:400;margin:0 0 0.4rem;line-height:1.1;">{category}</p>
@@ -422,9 +435,9 @@ def indices_table_html(
             <td style="padding:0.8rem 1.1rem;">{risk_chip(risk)}</td>
         </tr>"""
     return f"""
-<div style="border-radius:12px;overflow:hidden;
-    box-shadow:0 1px 3px rgba(10,22,40,.08),0 1px 2px rgba(10,22,40,.05);
-    margin:0.5rem 0 1.5rem;">
+<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0.5rem 0 1.5rem;">
+<div style="border-radius:12px;overflow:hidden;min-width:480px;
+    box-shadow:0 1px 3px rgba(10,22,40,.08),0 1px 2px rgba(10,22,40,.05);">
 <table style="width:100%;border-collapse:collapse;">
     <thead>
         <tr style="background:#0A1628;">
@@ -448,6 +461,7 @@ def indices_table_html(
     </thead>
     <tbody>{tbody}</tbody>
 </table>
+</div>
 </div>"""
 
 
@@ -465,7 +479,7 @@ def formula_card_open(title: str, citation: str) -> str:
     padding:1.5rem 1.75rem;margin:0 0 1rem;
     box-shadow:0 1px 3px rgba(10,22,40,.06);">
     <div style="display:flex;justify-content:space-between;align-items:baseline;
-        margin-bottom:0.75rem;">
+        flex-wrap:wrap;gap:0.4rem;margin-bottom:0.75rem;">
         <p style="font-family:'DM Serif Display',serif;font-size:1.2rem;
             color:#0A1628;margin:0;">{title}</p>
         <span style="font-size:0.72rem;color:#536780;font-family:'DM Sans',sans-serif;
