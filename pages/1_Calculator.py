@@ -1,5 +1,5 @@
 import streamlit as st
-from core.bmi import lbs_to_kg, inches_to_cm
+from core.bmi import lbs_to_kg, inches_to_cm, calc_whtr
 from core.styles import inject_css, section_label
 
 st.set_page_config(page_title="Calculator — BMI", page_icon="⚕️", layout="centered")
@@ -62,10 +62,29 @@ else:
             "Weight (kg)", min_value=2.0, max_value=700.0, value=70.0, step=0.5
         )
 
+# ── Waist circumference (optional) ────────────────────────────────────────────
+st.html(section_label("Waist Circumference"))
+st.caption("Optional — enables the Waist-to-Height Ratio (WHtR) calculation. Measure at the narrowest point, just above the navel.")
+col_waist, _ = st.columns([1, 1])
+with col_waist:
+    if imperial:
+        waist_raw = st.number_input(
+            "Waist (in) — leave at 0 to skip",
+            min_value=0.0, max_value=100.0, value=0.0, step=0.5,
+        )
+    else:
+        waist_raw = st.number_input(
+            "Waist (cm) — leave at 0 to skip",
+            min_value=0.0, max_value=250.0, value=0.0, step=0.5,
+        )
+
+st.divider()
+
 # ── Validation & conversion ───────────────────────────────────────────────────
 errors = []
 height_cm = inches_to_cm(height_raw) if imperial else height_raw
 weight_kg = lbs_to_kg(weight_raw) if imperial else weight_raw
+waist_cm  = inches_to_cm(waist_raw) if imperial else waist_raw
 
 if not (50.0 <= height_cm <= 300.0):
     errors.append(f"Height {height_cm:.1f} cm is outside physiological range (50–300 cm).")
@@ -85,5 +104,7 @@ if st.button("Calculate →", type="primary", disabled=bool(errors), use_contain
         "weight_kg": weight_kg,
         "height_display": f"{height_raw} {'in' if imperial else 'cm'}",
         "weight_display": f"{weight_raw} {'lbs' if imperial else 'kg'}",
+        "waist_cm": waist_cm if waist_raw > 0 else None,
+        "waist_display": f"{waist_raw} {'in' if imperial else 'cm'}" if waist_raw > 0 else None,
     }
     st.switch_page("pages/2_Results.py")

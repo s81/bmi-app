@@ -411,6 +411,9 @@ def indices_table_html(
     new_bmi_risk: str,
     pi_category: str,
     pi_risk: str,
+    whtr: float | None = None,
+    whtr_category: str = "—",
+    whtr_risk: str = "—",
 ) -> str:
     rows = [
         ("Standard BMI",       f"{standard_bmi:.2f}", "kg/m²", primary_category,  primary_risk),
@@ -418,6 +421,8 @@ def indices_table_html(
         ("Ponderal Index",      f"{pi:.2f}",           "kg/m³", pi_category,        pi_risk),
         ("BSA (Mosteller)",     f"{bsa:.3f}",          "m²",    "—",                "—"),
     ]
+    if whtr is not None:
+        rows.append(("Waist-to-Height Ratio", f"{whtr:.3f}", "", whtr_category, whtr_risk))
     tbody = ""
     for i, (name, val, unit, cat, risk) in enumerate(rows):
         bg = "background:#FAFCFF" if i % 2 else "background:#FFFFFF"

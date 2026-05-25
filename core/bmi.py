@@ -31,3 +31,7 @@ def calc_ponderal_index(weight_kg: float, height_m: float) -> float:
 
 def calc_bsa(height_cm: float, weight_kg: float) -> float:
     return math.sqrt(height_cm * weight_kg / 3600)
+
+
+def calc_whtr(waist_cm: float, height_cm: float) -> float:
+    return waist_cm / height_cm

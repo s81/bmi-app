@@ -3,6 +3,7 @@ from core.classifications import (
     classify_who_asian,
     classify_ponderal,
     classify_new_bmi,
+    classify_whtr,
     get_risk_color,
 )
 
@@ -65,6 +66,29 @@ def test_ponderal_overweight():
 def test_new_bmi_classification_delegates_to_who_standard():
     assert classify_new_bmi(22.0) == classify_who_standard(22.0)
     assert classify_new_bmi(25.0) == classify_who_standard(25.0)
+
+
+# WHtR
+def test_whtr_extremely_slim():
+    assert classify_whtr(0.35) == ("Extremely Slim", "Low (but other risks)")
+
+def test_whtr_healthy():
+    assert classify_whtr(0.45) == ("Healthy", "Average")
+
+def test_whtr_healthy_upper_boundary():
+    assert classify_whtr(0.499) == ("Healthy", "Average")
+
+def test_whtr_increased_risk_lower_boundary():
+    assert classify_whtr(0.5) == ("Increased Risk", "Increased")
+
+def test_whtr_increased_risk():
+    assert classify_whtr(0.55) == ("Increased Risk", "Increased")
+
+def test_whtr_high_risk():
+    assert classify_whtr(0.65) == ("High Risk", "High")
+
+def test_whtr_high_risk_lower_boundary():
+    assert classify_whtr(0.6) == ("High Risk", "High")
 
 
 # Risk color

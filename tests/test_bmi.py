@@ -27,7 +27,7 @@ def test_inches_to_cm_round_trip():
     assert abs(inches_to_cm(cm_to_inches(original)) - original) < 0.001
 
 
-from core.bmi import calc_standard_bmi, calc_new_bmi, calc_ponderal_index, calc_bsa
+from core.bmi import calc_standard_bmi, calc_new_bmi, calc_ponderal_index, calc_bsa, calc_whtr
 
 
 def test_standard_bmi_known_value():
@@ -66,3 +66,19 @@ def test_standard_bmi_height_in_meters_correct():
     # Positive confirmation: 1.75 m gives physiological result
     result = calc_standard_bmi(70.0, 1.75)
     assert 15.0 < result < 35.0
+
+
+def test_whtr_known_value():
+    # waist 80 cm, height 175 cm → 80 / 175 = 0.457
+    assert abs(calc_whtr(80.0, 175.0) - 0.457) < 0.001
+
+
+def test_whtr_boundary_at_half():
+    # waist exactly half of height → WHtR = 0.5
+    assert abs(calc_whtr(87.5, 175.0) - 0.5) < 0.001
+
+
+def test_whtr_uses_cm_not_meters():
+    # Both inputs must be in cm; mixing units would give nonsensical result
+    result = calc_whtr(80.0, 175.0)
+    assert 0.1 < result < 1.0

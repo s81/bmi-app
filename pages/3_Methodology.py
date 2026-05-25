@@ -43,6 +43,16 @@ st.html(
         "and renal function assessment. Reported in m². [4]"
     ))
 
+st.html(formula_card_open("Waist-to-Height Ratio", "Ashwell & Gibson, 2016"))
+st.latex(r"\text{WHtR} = \frac{\text{waist (cm)}}{\text{height (cm)}}")
+st.html(
+    formula_card_close(
+        "A dimensionless index that adjusts waist circumference for stature. "
+        "Stronger predictor of cardiometabolic risk than BMI alone because it captures "
+        "central adiposity directly. The evidence-based target is WHtR &lt; 0.5 "
+        "('keep your waist to less than half your height'). [6]"
+    ))
+
 st.divider()
 
 # ── Classification Tables ─────────────────────────────────────────────────────
@@ -152,6 +162,24 @@ st.html(
         ],
     ))
 
+st.html(
+    '<p style="font-family:\'DM Serif Display\',serif;font-size:1.15rem;'
+    'color:#0A1628;margin:0.5rem 0 0.25rem;">Waist-to-Height Ratio</p>'
+    '<p style="font-size:0.82rem;color:#536780;font-family:\'DM Sans\',sans-serif;'
+    'margin:0 0 0.5rem;line-height:1.5;">Applicable across all ethnicities. '
+    'The 0.5 boundary ("half your height") is the key evidence-based threshold. [6]</p>')
+st.html(
+    styled_table(
+        headers=["WHtR Range", "Category", "Health Risk"],
+        rows=[
+            ("< 0.40",        "Extremely Slim",  "Low (but other risks)"),
+            ("0.40 – 0.499",  "Healthy",         "Average"),
+            ("0.50 – 0.599",  "Increased Risk",  "Increased"),
+            ("≥ 0.60",        "High Risk",        "High"),
+        ],
+        risk_col=2,
+    ))
+
 st.divider()
 
 # ── References ────────────────────────────────────────────────────────────────
@@ -165,5 +193,6 @@ st.html(
   <li>Rohrer, F. (1921). Der Index der Körperfülle als Maß des Ernährungszustandes. <em>Münchener Medizinische Wochenschrift</em>, 68, 580–582.</li>
   <li>Mosteller, R.D. (1987). Simplified calculation of body-surface area. <em>New England Journal of Medicine</em>, 317(17), 1098.</li>
   <li>WHO Expert Consultation. (2004). Appropriate body-mass index for Asian populations and its implications for policy and intervention strategies. <em>The Lancet</em>, 363(9403), 157–163.</li>
+  <li>Ashwell, M., &amp; Gibson, S. (2016). Waist-to-height ratio as an indicator of 'early health risk': simpler and more predictive than using a 'matrix' based on BMI and waist circumference. <em>BMJ Open</em>, 6(3), e010159.</li>
 </ol>
 """)

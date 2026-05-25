@@ -37,6 +37,17 @@ def classify_new_bmi(new_bmi: float) -> tuple[str, str]:
     return classify_who_standard(new_bmi)
 
 
+def classify_whtr(whtr: float) -> tuple[str, str]:
+    if whtr < 0.4:
+        return ("Extremely Slim", "Low (but other risks)")
+    elif whtr < 0.5:
+        return ("Healthy", "Average")
+    elif whtr < 0.6:
+        return ("Increased Risk", "Increased")
+    else:
+        return ("High Risk", "High")
+
+
 def get_risk_color(risk: str) -> str:
     mapping = {
         "Low (but other risks)": "blue",
