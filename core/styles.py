@@ -1,4 +1,3 @@
-import streamlit as st
 from core.bmi import kg_to_lbs
 
 # ── Risk palette ────────────────────────────────────────────────────────────
@@ -311,8 +310,8 @@ label p {
 """
 
 
-def inject_css():
-    st.html(_CSS)
+def get_css() -> str:
+    return _CSS
 
 
 def risk_chip(risk: str) -> str:

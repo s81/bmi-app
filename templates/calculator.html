@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}Calculator &mdash; BMI{% endblock %}
+{% block content %}
+
+<h1>Calculator</h1>
+<p class="caption">This tool is for informational purposes only and does not replace clinical assessment.</p>
+
+{% for err in errors %}
+<div class="alert alert-error">{{ err }}</div>
+{% endfor %}
+
+<form method="post" action="{{ url_for('calculator') }}">
+
+  <!-- Unit system -->
+  {{ section_label("Unit System") | safe }}
+  <div class="radio-group" style="margin-bottom:1rem;">
+    <label class="radio-option">
+      <input type="radio" name="unit" value="metric" id="unit-metric"
+             {% if form.get('unit','metric') == 'metric' %}checked{% endif %}>
+      Metric (kg, cm)
+    </label>
+    <label class="radio-option">
+      <input type="radio" name="unit" value="imperial" id="unit-imperial"
+             {% if form.get('unit') == 'imperial' %}checked{% endif %}>
+      Imperial (lbs, in)
+    </label>
+  </div>
+  <hr>
+
+  <!-- Patient profile -->
+  {{ section_label("Patient Profile") | safe }}
+  <div class="grid-3" style="margin-bottom:1.5rem;">
+    <div class="form-group">
+      <label class="form-label" for="age">Age</label>
+      <input type="number" id="age" name="age" min="2" max="120" step="1"
+             value="{{ form.get('age', 30) }}" required>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="sex">Sex</label>
+      <select id="sex" name="sex">
+        {% for opt in ["Male", "Female", "Other"] %}
+        <option value="{{ opt }}" {% if form.get('sex', 'Male') == opt %}selected{% endif %}>{{ opt }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="ethnicity">Ethnicity</label>
+      <select id="ethnicity" name="ethnicity">
+        {% for opt in ["General population", "Asian (East/South)", "Other"] %}
+        <option value="{{ opt }}" {% if form.get('ethnicity', 'General population') == opt %}selected{% endif %}>{{ opt }}</option>
+        {% endfor %}
+      </select>
+      <p class="field-hint">WHO recommends lower BMI thresholds for East and South Asian populations.</p>
+    </div>
+  </div>
+  <hr>
+
+  <!-- Measurements -->
+  {{ section_label("Measurements") | safe }}
+  <div class="grid-2" style="margin-bottom:1.5rem;">
+    <div class="form-group">
+      <label class="form-label" id="height-label" for="height">Height (<span class="unit-label-cm">cm</span><span class="unit-label-in" style="display:none">in</span>)</label>
+      <input type="number" id="height" name="height" step="0.5"
+             class="metric-default"
+             data-metric-min="50" data-metric-max="300" data-metric-default="175"
+             data-imperial-min="20" data-imperial-max="118" data-imperial-default="69"
+             value="{{ form.get('height', 175) }}" required>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="weight">Weight (<span class="unit-label-cm">kg</span><span class="unit-label-in" style="display:none">lbs</span>)</label>
+      <input type="number" id="weight" name="weight" step="0.5"
+             data-metric-min="2" data-metric-max="700" data-metric-default="70"
+             data-imperial-min="4" data-imperial-max="1543" data-imperial-default="154"
+             value="{{ form.get('weight', 70) }}" required>
+    </div>
+  </div>
+  <hr>
+
+  <!-- Circumference -->
+  {{ section_label("Circumference Measurements") | safe }}
+  <p class="caption" style="margin-bottom:1rem;">
+    Optional &mdash; waist enables WHtR &middot; waist + neck enables Navy body fat (male) &middot;
+    waist + neck + hip enables Navy body fat (female/other) &middot; leave unused fields at 0.
+  </p>
+  <div class="grid-3" style="margin-bottom:1.5rem;">
+    <div class="form-group">
+      <label class="form-label" for="waist">Waist (<span class="unit-label-cm">cm</span><span class="unit-label-in" style="display:none">in</span>)</label>
+      <input type="number" id="waist" name="waist" step="0.5" min="0"
+             data-metric-max="250" data-imperial-max="100"
+             value="{{ form.get('waist', 0) }}">
+      <p class="field-hint">Measure at narrowest point, just above the navel.</p>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="neck">Neck (<span class="unit-label-cm">cm</span><span class="unit-label-in" style="display:none">in</span>)</label>
+      <input type="number" id="neck" name="neck" step="0.5" min="0"
+             data-metric-max="80" data-imperial-max="30"
+             value="{{ form.get('neck', 0) }}">
+      <p class="field-hint">Measure just below the larynx (Adam&rsquo;s apple).</p>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="hip">Hip (<span class="unit-label-cm">cm</span><span class="unit-label-in" style="display:none">in</span>)</label>
+      <input type="number" id="hip" name="hip" step="0.5" min="0"
+             data-metric-max="250" data-imperial-max="100"
+             value="{{ form.get('hip', 0) }}">
+      <p class="field-hint">Measure at widest point. Used in female Navy body fat formula.</p>
+    </div>
+  </div>
+
+  <div style="margin-top:0.75rem;">
+    <button type="submit" class="btn btn-primary">Calculate &rarr;</button>
+  </div>
+</form>
+
+<script>
+  (function () {
+    var metricRadio   = document.getElementById('unit-metric');
+    var imperialRadio = document.getElementById('unit-imperial');
+    var cmLabels = document.querySelectorAll('.unit-label-cm');
+    var inLabels = document.querySelectorAll('.unit-label-in');
+    var inputs   = document.querySelectorAll('input[data-metric-default]');
+
+    function applyUnit(isImperial) {
+      cmLabels.forEach(function(el){ el.style.display = isImperial ? 'none' : ''; });
+      inLabels.forEach(function(el){ el.style.display = isImperial ? '' : 'none'; });
+      inputs.forEach(function(inp) {
+        if (isImperial) {
+          inp.min  = inp.dataset.imperialMin  || 0;
+          inp.max  = inp.dataset.imperialMax  || '';
+        } else {
+          inp.min  = inp.dataset.metricMin  || 0;
+          inp.max  = inp.dataset.metricMax  || '';
+        }
+      });
+    }
+
+    metricRadio.addEventListener('change', function(){ applyUnit(false); });
+    imperialRadio.addEventListener('change', function(){ applyUnit(true); });
+
+    // Apply on page load
+    applyUnit(imperialRadio.checked);
+  })();
+</script>
+
+{% endblock %}
