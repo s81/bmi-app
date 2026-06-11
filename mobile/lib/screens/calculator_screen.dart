@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../core/bmi.dart';
 import '../models/bmi_inputs.dart';
 import '../providers/bmi_provider.dart';
+import '../providers/history_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/section_header.dart';
 
@@ -55,7 +56,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     });
   }
 
-  void _calculate() {
+  Future<void> _calculate() async {
     if (!_formKey.currentState!.validate()) return;
 
     final heightRaw = double.parse(_heightCtrl.text);
@@ -82,8 +83,11 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       imperial: _imperial,
     );
 
-    context.read<BmiProvider>().calculate(inputs);
-    widget.onCalculated();
+    await context.read<BmiProvider>().calculate(
+      inputs,
+      history: context.read<HistoryProvider>(),
+    );
+    if (mounted) widget.onCalculated();
   }
 
   @override

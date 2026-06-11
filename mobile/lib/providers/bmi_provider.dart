@@ -3,6 +3,7 @@ import '../core/bmi.dart';
 import '../core/classifications.dart';
 import '../models/bmi_inputs.dart';
 import '../models/bmi_results.dart';
+import 'history_provider.dart';
 
 class BmiProvider extends ChangeNotifier {
   BmiInputs? _inputs;
@@ -12,10 +13,13 @@ class BmiProvider extends ChangeNotifier {
   BmiResults? get results => _results;
   bool get hasResults => _results != null;
 
-  void calculate(BmiInputs inputs) {
+  Future<void> calculate(BmiInputs inputs, {HistoryProvider? history}) async {
     _inputs = inputs;
     _results = _compute(inputs);
     notifyListeners();
+    if (history != null) {
+      await history.save(inputs, _results!);
+    }
   }
 
   void clear() {
