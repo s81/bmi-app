@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}BMI Calculator{% endblock %}
+{% block content %}
+
+<p style="font-family:'DM Sans',sans-serif;font-size:0.72rem;font-weight:700;
+   text-transform:uppercase;letter-spacing:0.12em;color:#536780;margin-bottom:0.25rem;">
+  Scientific BMI Analysis
+</p>
+<h1>Body Mass Index<br>Calculator</h1>
+<p style="color:#536780;font-size:0.95rem;max-width:520px;line-height:1.6;
+   margin-top:0.25rem;font-family:'DM Sans',sans-serif;">
+  Four validated indices &middot; WHO &amp; Asian cutoffs &middot; Full scientific report
+</p>
+
+<div class="chips">
+  <span class="chip">Standard BMI (WHO)</span>
+  <span class="chip">New BMI &mdash; Peterson 2016</span>
+  <span class="chip">Ponderal Index</span>
+  <span class="chip">BSA &mdash; Mosteller</span>
+</div>
+
+<div class="alert alert-warning">
+  &#9432;&nbsp; This tool is for informational purposes only and does not replace clinical assessment.
+</div>
+
+<p style="margin-top:1.5rem;font-size:0.88rem;color:#536780;font-family:'DM Sans',sans-serif;">
+  Use the sidebar to navigate to the <strong>Calculator</strong>.
+</p>
+
+{% endblock %}
