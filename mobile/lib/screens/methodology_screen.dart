@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
 import '../widgets/section_header.dart';
@@ -27,60 +26,62 @@ class MethodologyScreen extends StatelessWidget {
             _formulaCard(
               'Standard BMI',
               'WHO, 1995',
-              r'\text{BMI} = \dfrac{\text{weight (kg)}}{\text{height (m)}^2}',
+              'BMI = weight (kg) / height² (m)',
               'The foundational index proposed by WHO for population-level obesity screening. '
               'Defined as body weight divided by the square of height. [1]',
             ),
             _formulaCard(
               'New BMI — Peterson Formula',
               'Peterson et al., 2016',
-              r'\text{New BMI} = \dfrac{1.3 \times \text{weight (kg)}}{\text{height (m)}^{2.5}}',
-              'Corrects the standard formula\'s systematic bias against tall individuals '
+              'New BMI = 1.3 × weight (kg) / height²·⁵ (m)',
+              "Corrects the standard formula's systematic bias against tall individuals "
               'by raising the height exponent from 2 to 2.5. [2]',
             ),
             _formulaCard(
               'Ponderal Index',
               'Rohrer, 1921',
-              r'\text{PI} = \dfrac{\text{weight (kg)}}{\text{height (m)}^3}',
+              'PI = weight (kg) / height³ (m)',
               'An alternative slenderness measure less sensitive to height variation than BMI. '
               'Normal range: 11–14 kg/m³. [3]',
             ),
             _formulaCard(
               'Body Surface Area — Mosteller',
               'Mosteller, 1987',
-              r'\text{BSA} = \sqrt{\dfrac{\text{height (cm)} \times \text{weight (kg)}}{3600}}',
+              'BSA = √( height (cm) × weight (kg) / 3600 )',
               'Used clinically for chemotherapy dosing and cardiac output normalisation. '
               'Reported in m². [4]',
             ),
             _formulaCard(
               'Waist-to-Height Ratio',
               'Ashwell & Gibson, 2016',
-              r'\text{WHtR} = \dfrac{\text{waist (cm)}}{\text{height (cm)}}',
+              'WHtR = waist (cm) / height (cm)',
               'Stronger predictor of cardiometabolic risk than BMI alone. '
               'Evidence-based target: WHtR < 0.5. [6]',
             ),
             _formulaCard(
               'IBW — Hamwi Formula',
               'Hamwi, 1964',
-              r'\text{IBW} = \begin{cases} 48.0 + 2.7(h_{\text{in}}-60) & \text{male} \\ 45.5 + 2.2(h_{\text{in}}-60) & \text{female}\end{cases}',
+              'Male:   IBW = 48.0 + 2.7 × (h_in − 60)\n'
+              'Female: IBW = 45.5 + 2.2 × (h_in − 60)',
               'Original IBW formula developed for insulin dosing in diabetes. Height in inches above 5 ft. [10]',
             ),
             _formulaCard(
               'IBW — Devine Formula',
               'Devine, 1974',
-              r'\text{IBW} = \begin{cases} 50.0 + 2.3(h_{\text{in}}-60) & \text{male} \\ 45.5 + 2.3(h_{\text{in}}-60) & \text{female}\end{cases}',
+              'Male:   IBW = 50.0 + 2.3 × (h_in − 60)\n'
+              'Female: IBW = 45.5 + 2.3 × (h_in − 60)',
               'Most widely used IBW formula in clinical practice. Standard reference in pharmacokinetics. [11]',
             ),
             _formulaCard(
               'Body Fat % — U.S. Navy',
               'Hodgdon & Beckett, 1984',
-              r'\%\text{BF} = \dfrac{495}{1.0324 - 0.19077\log_{10}(W\!-\!N) + 0.15456\log_{10}(H)} - 450',
+              '%BF = 495 / (1.0324 − 0.19077·log₁₀(W−N) + 0.15456·log₁₀(H)) − 450',
               'W = waist, N = neck, H = height (all cm). Validated on U.S. military. Accuracy ±3–4%. [7]',
             ),
             _formulaCard(
               'Body Fat % — Deurenberg',
               'Deurenberg et al., 1991',
-              r'\%\text{BF} = 1.20\times\text{BMI} + 0.23\times\text{age} - 10.8\times S - 5.4',
+              '%BF = 1.20 × BMI + 0.23 × age − 10.8 × S − 5.4',
               'S = 1 for male, 0 for female. Requires only BMI and age. SEE ≈ 4.1%. [8]',
             ),
 
@@ -144,7 +145,7 @@ class MethodologyScreen extends StatelessWidget {
     );
   }
 
-  Widget _formulaCard(String title, String citation, String latex, String description) {
+  Widget _formulaCard(String title, String citation, String formula, String description) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(18),
@@ -185,13 +186,20 @@ class MethodologyScreen extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Math.tex(
-              latex,
-              textStyle: const TextStyle(fontSize: 15),
-              mathStyle: MathStyle.display,
+          const SizedBox(height: 10),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF1F5FB),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              formula,
+              style: GoogleFonts.jetBrainsMono(
+                fontSize: 13, color: AppColors.navy3,
+                fontWeight: FontWeight.w500, height: 1.6,
+              ),
             ),
           ),
           const SizedBox(height: 10),
