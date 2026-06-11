@@ -74,7 +74,7 @@ class HistoryProvider extends ChangeNotifier {
           .insert(entry.toInsertMap(userId))
           .select()
           .single();
-      _entries.insert(0, HistoryEntry.fromMap(inserted as Map<String, dynamic>));
+      _entries.insert(0, HistoryEntry.fromMap(inserted));
       notifyListeners();
     } catch (_) {}
   }
